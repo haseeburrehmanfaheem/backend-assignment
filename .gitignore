@@ -45,3 +45,7 @@ coverage/
 # Ignore lockfile if you’re not using it
 # (optional — depends if you use `package-lock.json`)
 # package-lock.json
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
