@@ -1,0 +1,47 @@
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# dotenv environment files
+.env
+.env.*.local
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Optional npm cache
+.npm/
+
+# Cloud Build / GCP artifacts
+.gcloudignore
+.cloudbuild/
+
+# VS Code settings (if you're using it)
+.vscode/
+
+# Output from builds
+dist/
+build/
+
+# Local coverage tools
+coverage/
+
+# macOS & Linux
+*.swp
+
+# Ignore lockfile if you’re not using it
+# (optional — depends if you use `package-lock.json`)
+# package-lock.json
