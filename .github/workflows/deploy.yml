@@ -1,0 +1,46 @@
+name: Deploy Pipeline
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-infra:
+    name: Deploy Infrastructure with Terraform
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform  # All steps run in /terraform
+    steps:
+      - uses: actions/checkout@v4     # Checkout code
+
+      # Authenticate to GCP
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+
+      # Initialize & apply Terraform
+      - run: terraform init
+      - run: terraform apply -auto-approve
+
+  deploy-cloud-run:
+    name: Deploy Cloud Run Service
+    needs: deploy-infra   # Wait for Terraform to finish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Authenticate to GCP
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+
+      # Deploy Cloud Run from the metrics-ingestion directory
+      - run: |
+          cd metrics-ingestion
+          gcloud run deploy metrics-api \
+            --source=. \
+            --region=us-central1 \
+            --platform=managed \
+            --allow-unauthenticated
