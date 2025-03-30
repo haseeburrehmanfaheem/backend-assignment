@@ -31,33 +31,29 @@ jobs:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
         run: terraform init
 
-      # ✅ Import existing Cloud Run service
       - name: Import Cloud Run service
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
         run: |
           terraform import google_cloud_run_service.metrics_api projects/${{ secrets.GCP_PROJECT_ID }}/locations/us-central1/services/metrics-api || echo "Already imported"
 
-      # ✅ Import existing Pub/Sub topic
       - name: Import Pub/Sub topic
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
         run: |
           terraform import google_pubsub_topic.metrics projects/${{ secrets.GCP_PROJECT_ID }}/topics/metrics-topic || echo "Already imported"
 
-      # ✅ Import existing BigQuery dataset
       - name: Import BigQuery dataset
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
         run: |
-          terraform import google_bigquery_dataset.metrics ${{ secrets.GCP_PROJECT_ID }}:metrics_dataset || echo "Already imported"
+          terraform import google_bigquery_dataset.metrics projects/${{ secrets.GCP_PROJECT_ID }}/datasets/metrics_dataset || echo "Already imported"
 
-      # ✅ Import existing BigQuery table
       - name: Import BigQuery table
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
         run: |
-          terraform import google_bigquery_table.raw_metrics ${{ secrets.GCP_PROJECT_ID }}:metrics_dataset.raw_metrics || echo "Already imported"
+          terraform import google_bigquery_table.raw_metrics projects/${{ secrets.GCP_PROJECT_ID }}/datasets/metrics_dataset/tables/raw_metrics || echo "Already imported"
 
       - name: Terraform Apply
         env:
