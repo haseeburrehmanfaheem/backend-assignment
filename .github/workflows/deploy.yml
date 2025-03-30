@@ -35,7 +35,7 @@ jobs:
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
         run: |
-          terraform import google_cloud_run_service.metrics_api projects/${{ secrets.GCP_PROJECT_ID }}/locations/us-central1/services/metrics-api || echo "Already imported"
+          terraform import google_cloud_run_service.metrics_api locations/us-central1/namespaces/${{ secrets.GCP_PROJECT_ID }}/services/metrics-api || echo "Already imported"
 
       - name: Import Pub/Sub topic
         env:
