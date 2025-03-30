@@ -13,6 +13,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4     # Checkout code
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6  # or whatever version you're using
+
       # Authenticate to GCP
       - uses: google-github-actions/setup-gcloud@v2
         with:
