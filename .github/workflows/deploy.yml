@@ -1,4 +1,5 @@
 name: Deploy Pipeline
+
 on:
   push:
     branches: [main]
@@ -9,40 +10,48 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: terraform  # All steps run in /terraform
+        working-directory: terraform  # All terraform commands run in ./terraform
     steps:
-      - uses: actions/checkout@v4     # Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.6.6  # or whatever version you're using
+          terraform_version: 1.6.6  # You can update this as needed
 
-      # Authenticate to GCP
-      - uses: google-github-actions/setup-gcloud@v2
+      - name: Authenticate with GCP
+        uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
 
-      # Initialize & apply Terraform
-      - run: terraform init
-      - run: terraform apply -auto-approve
+      - name: Terraform Init
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
+        run: terraform init
+
+      - name: Terraform Apply
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
+        run: terraform apply -auto-approve
 
   deploy-cloud-run:
     name: Deploy Cloud Run Service
     needs: deploy-infra   # Wait for Terraform to finish
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # Authenticate to GCP
-      - uses: google-github-actions/setup-gcloud@v2
+      - name: Authenticate with GCP
+        uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
 
-      # Deploy Cloud Run from the metrics-ingestion directory
-      - run: |
+      - name: Deploy to Cloud Run
+        run: |
           cd metrics-ingestion
           gcloud run deploy metrics-api \
             --source=. \
