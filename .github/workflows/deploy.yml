@@ -60,7 +60,7 @@ jobs:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_SA_KEY }}
         run: terraform apply -auto-approve
 
-    deploy-cloud-run:
+  deploy-cloud-run:
     name: Deploy Cloud Run Service
     needs: deploy-infra
     runs-on: ubuntu-latest
@@ -86,4 +86,3 @@ jobs:
             --region=us-central1 \
             --platform=managed \
             --allow-unauthenticated
-
