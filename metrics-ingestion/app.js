@@ -29,18 +29,16 @@ app.post('/metrics', async (req, res) => {
 app.get('/anomalies', async (req, res) => {
   try {
     const query = `
-      SELECT timestamp, latency, is_anomaly
-      FROM ML.DETECT_ANOMALIES(
-        MODEL metrics_dataset.latency_anomalies,
-        STRUCT(0.95 AS anomaly_prob_threshold),
-        (SELECT timestamp, latency FROM metrics_dataset.raw_metrics)
-      );
+      SELECT minute_timestamp, latency, is_anomaly
+      FROM \`metrics_dataset.anomalies_table\`
+      ORDER BY minute_timestamp DESC
+      LIMIT 100
     `;
     const [rows] = await bigquery.query(query);
     res.status(200).json(rows);
   } catch (error) {
-    console.error('Error querying BigQuery:', error);
-    res.status(500).send('Failed to retrieve anomalies');
+    console.error('BigQuery Error:', error);
+    res.status(500).json({ error: error.message || 'Failed to fetch anomalies' });
   }
 });
 
